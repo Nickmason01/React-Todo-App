@@ -1,32 +1,50 @@
-import './styles.css'
+import { useState } from "react";
+import "./styles.css";
 
 function App() {
-  return <><form className='new-item-form'>
-    <div className='form-row'>
-      <label htmlFor='Item'>New Item</label>
-      <input type="text" id="Item"></input>
-      <button className='btn'>Add</button>
-    </div>
-    <h1>Todo List</h1>
-    <ul className='list'>
-      <li>
-        <label>
-          <input type="checkbox"/>
-          Item 1
-        </label>
-        <button className='btn btn-danger'>Delete</button>
-      </li>
-      <li>
-        <label>
-          <input type="checkbox"/>
-          Item 2
-        </label>
-        <button className='btn btn-danger'>Delete</button>
-      </li>
-    </ul>
+  const [newItem, setNewItem] = useState("");
+  const [toDos, setToDos] = useState([]);
 
-  </form>
-  </>
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    setToDos((currentToDos) => {
+      return [
+        ...currentToDos,
+        { id: crypto.randomUUID(), title: newItem, completed: false },
+      ];
+    });
+  }
+  return (
+    <>
+      <form onSubmit={handleSubmit} className="new-item-form">
+        <div className="form-row">
+          <label htmlFor="Item">New Item</label>
+          <input
+            value={newItem}
+            onChange={(e) => setNewItem(e.target.value)}
+            type="text"
+            id="Item"
+          ></input>
+        </div>
+        <button className="btn">Add</button>
+      </form>
+      <h1>Todo List</h1>
+      <ul className="list">
+        {toDos.map((todo) => {
+          return (
+            <li key={todo.id}>
+              <label>
+                <input type="checkbox" checked={todo.completed}/>
+                {todo.title}
+              </label>
+              <button className="btn btn-danger">Delete</button>
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  );
 }
 
-export default App
+export default App;
