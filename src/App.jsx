@@ -1,44 +1,52 @@
 import { useState } from "react";
 import "./styles.css";
+import ToDoForm from "./ToDoForm";
 
 function App() {
-  const [newItem, setNewItem] = useState("");
+  
   const [toDos, setToDos] = useState([]);
 
-  function handleSubmit(e) {
-    e.preventDefault();
-
+  function addToDo(title) {
     setToDos((currentToDos) => {
-      return [
-        ...currentToDos,
-        { id: crypto.randomUUID(), title: newItem, completed: false },
-      ];
-    });
+          return [
+            ...currentToDos,
+            { id: crypto.randomUUID(), title, completed: false },
+          ];
+        });
+  }
+
+
+  function toggleToDo (id, finished) {
+    setToDos(currentToDos => {
+      return currentToDos.map(todo => {
+        if(todo.id ==id) {
+          return {...todo, finished}
+        }
+         return todo
+      })
+    })
+  }
+
+  function deleteToDo (id) {
+    setToDos(currentToDos =>{
+      return currentToDos.filter(todo => todo.id!== id)
+    })
   }
   return (
     <>
-      <form onSubmit={handleSubmit} className="new-item-form">
-        <div className="form-row">
-          <label htmlFor="Item">New Item</label>
-          <input
-            value={newItem}
-            onChange={(e) => setNewItem(e.target.value)}
-            type="text"
-            id="Item"
-          ></input>
-        </div>
-        <button className="btn">Add</button>
-      </form>
+    <ToDoForm onSubmit={addToDo}/>
       <h1>Todo List</h1>
       <ul className="list">
+        {toDos.length === 0 && "All Finished!"}
         {toDos.map((todo) => {
           return (
             <li key={todo.id}>
               <label>
-                <input type="checkbox" checked={todo.completed}/>
+                <input type="checkbox" checked={todo.finished} 
+                onChange={e => toggleToDo(todo.id, e.target.checked)}/>
                 {todo.title}
               </label>
-              <button className="btn btn-danger">Delete</button>
+              <button className="btn btn-danger" onClick={() => deleteToDo(todo.id)}>Delete</button>
             </li>
           );
         })}
